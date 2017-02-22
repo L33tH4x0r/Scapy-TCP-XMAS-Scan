@@ -26,23 +26,25 @@ for _ in range(len(ports_to_scan)):
     scanning_ports.append(ports_to_scan[index])
     ports_to_scan.remove(ports_to_scan[index])
 
-print "\n"
+print "PORT \t STATE"
+
+src_port = RandShort()
+
 for port in scanning_ports:
+    # wait
+    time.sleep(random.randint(0,15))
+
     # Send Packet
-    print "Sending packet to ", destIP, " at port ", port, "\n"
-    tcp_connect_scan_response = sr1(IP(src = srcIP, dst = destIP)/TCP(sport = RandShort(), dport = port), timeout = 10)
+    tcp_connect_scan_response = sr1(IP(src = srcIP, dst = destIP)/TCP(sport = src_port, dport = port), timeout = 10, verbose = False)
 
     # print response
     if (str(type(tcp_connect_scan_response)) == "<type 'NoneType'>"):
-        print "Packet unreadable"
-        print "Port ", port, " is closed", "\n"
+        print port, "\t Closed"
 
     if tcp_connect_scan_response.getlayer(TCP).flags == 0x14:
-        print "Destination returned Rest Ack"
-        print "Port ", port, " is closed", "\n"
+        print port, "\t Closed"
 
     elif tcp_connect_scan_response.getlayer(TCP).flags == 0x12:
-        print "Destination returned Syn Ack"
-        print "Port ", port, " is open", "\n"
-
-    time.sleep(random.randint(0,15))
+        # Send response
+        send(IP(dst=destIP)/TCP(sport=src_port,dport=port,flags="AR"), verbose = False)
+        print port, "\t Open"
