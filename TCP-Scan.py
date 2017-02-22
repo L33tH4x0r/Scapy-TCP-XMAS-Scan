@@ -45,4 +45,4 @@ for port in scanning_ports:
         print "Destination returned Syn Ack"
         print "Port ", port, " is open", "\n"
 
-    time.sleep(random.randint(0,3))
+    time.sleep(random.randint(0,15))
